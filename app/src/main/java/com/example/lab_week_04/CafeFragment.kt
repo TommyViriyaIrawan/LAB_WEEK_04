@@ -1,59 +1,49 @@
 package com.example.lab_week_04
 
+// CafeFragment.kt
+
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.widget.ViewPager2 // Make sure you have this import
+// Import your adapter
+// import com.example.lab_week_04.YourViewPagerAdapter
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [CafeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CafeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var viewPager: ViewPager2? = null // Declare as nullable if accessing before onViewCreated
+    // or use lateinit if sure it will be initialized in onViewCreated
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_cafe, container, false)
+        return inflater.inflate(R.layout.fragment_cafe, container, false) // Replace R.layout.fragment_cafe with your actual layout file
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CafeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            CafeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize viewPager by finding it in the inflated view
+        viewPager = view.findViewById(R.id.cafeViewPager) // Replace R.id.your_viewpager_id with the ID from your XML
+
+        // NOW it's safe to set the adapter (around your original line 38)
+        if (viewPager != null) {
+            // val myAdapter = YourViewPagerAdapter(this) // Initialize your adapter
+            // viewPager?.adapter = myAdapter
+            // The line that likely caused the crash was similar to:
+            // viewPager.setAdapter(yourAdapterInstance) // This would crash if viewPager was null
+        } else {
+            // Log an error or handle the case where the ViewPager2 is not found
+            // Log.e("CafeFragment", "ViewPager2 not found in the layout!")
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewPager = null // Optional: Clear the reference to avoid memory leaks
     }
 }
